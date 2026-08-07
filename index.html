@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CooperAI — Your Fisch Expert</title>
+<meta name="description" content="CooperAI is an AI-style chat assistant dedicated to the Roblox game Fisch — rods, bait, enchants, locations, bosses and more." />
+<link rel="stylesheet" href="style.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎣</text></svg>" />
+</head>
+<body>
+
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="logo">
+      <span class="logo-icon">🎣</span>
+      <span class="logo-text">Cooper<span class="accent">AI</span></span>
+    </div>
+    <nav class="nav">
+      <a href="#features">Features</a>
+      <a href="#chat">Chat</a>
+      <a href="#topics">Topics</a>
+      <a href="#about">About</a>
+    </nav>
+    <a href="#chat" class="btn btn-primary btn-small">Ask CooperAI</a>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero container">
+    <div class="hero-badge">Built for the Roblox game <strong>Fisch</strong></div>
+    <h1>Your always-on guide to <span class="accent">Fisch</span>.</h1>
+    <p class="hero-sub">
+      CooperAI is a chat assistant that answers your questions about Fisch — rods, bait,
+      enchants, locations, bosses, secrets and more — instantly, in plain language.
+    </p>
+    <div class="hero-actions">
+      <a href="#chat" class="btn btn-primary">Start chatting</a>
+      <a href="#topics" class="btn btn-ghost">See what it knows</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><strong>24/7</strong><span>Always available</span></div>
+      <div class="stat"><strong>0s</strong><span>Sign-up required</span></div>
+      <div class="stat"><strong>Fan-made</strong><span>Built for anglers</span></div>
+    </div>
+  </section>
+
+  <section id="features" class="features container">
+    <h2>Why anglers use CooperAI</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Instant answers</h3>
+        <p>Skip the wiki-hopping. Ask about a rod, bait or location and get a straight answer in seconds.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧭</div>
+        <h3>Beginner friendly</h3>
+        <p>New to Moosewood? CooperAI walks you through your first rod, first bait, and first sale.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🗺️</div>
+        <h3>Deep game knowledge</h3>
+        <p>From enchant tiers to boss fish strategy, CooperAI covers the mechanics that matter.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <h3>Conversational</h3>
+        <p>No menus to dig through — just type your question the way you'd ask a friend.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="chat" class="chat-section container">
+    <h2>Chat with CooperAI</h2>
+    <p class="chat-sub">Try asking about rods, bait, enchants, locations, bosses, or how to get started.</p>
+
+    <div class="chat-window">
+      <div class="chat-header">
+        <span class="chat-dot"></span>
+        <span>CooperAI</span>
+        <span class="chat-status">Online</span>
+      </div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-suggestions" id="chatSuggestions"></div>
+      <form class="chat-input-row" id="chatForm">
+        <input type="text" id="chatInput" placeholder="Ask about rods, bait, locations, bosses…" autocomplete="off" />
+        <button type="submit" class="btn btn-primary btn-send">Send</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="topics" class="topics container">
+    <h2>What CooperAI can talk about</h2>
+    <div class="topic-grid">
+      <div class="topic-chip">Fishing Rods</div>
+      <div class="topic-chip">Bait</div>
+      <div class="topic-chip">Enchantments</div>
+      <div class="topic-chip">Locations & Seas</div>
+      <div class="topic-chip">Bosses & Secrets</div>
+      <div class="topic-chip">Currency & Selling</div>
+      <div class="topic-chip">Boats & Travel</div>
+      <div class="topic-chip">Trading</div>
+      <div class="topic-chip">Beginner Tips</div>
+      <div class="topic-chip">Recent Updates</div>
+    </div>
+  </section>
+
+  <section id="about" class="about container">
+    <h2>About CooperAI</h2>
+    <p>
+      CooperAI is a fan-made chat assistant focused entirely on <strong>Fisch</strong>, the open-world
+      fishing adventure game on Roblox. It answers questions using a built-in knowledge base covering
+      the game's core mechanics — no account, download, or data collection required.
+    </p>
+    <p class="disclaimer">
+      CooperAI is an independent fan project and is not affiliated with, endorsed by, or connected to
+      Roblox Corporation, WoozyNate, or the Fisching development team. Fisch and all related game
+      content are the property of their respective owners.
+    </p>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="logo">
+      <span class="logo-icon">🎣</span>
+      <span class="logo-text">Cooper<span class="accent">AI</span></span>
+    </div>
+    <p>Made for the Fisch community · Not affiliated with Roblox or Fisching</p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
