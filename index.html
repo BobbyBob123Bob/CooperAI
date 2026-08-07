@@ -4,14 +4,21 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>CooperAI — Your Fisch Expert</title>
-<meta name="description" content="CooperAI is an AI-style chat assistant dedicated to the Roblox game Fisch — rods, bait, enchants, locations, bosses and more." />
+<meta name="description" content="CooperAI is an AI-style chat assistant dedicated to the Roblox game Fisch — rods, bait, enchants, mutations, locations, bosses, and a 300-fish lookup database." />
 <link rel="stylesheet" href="style.css" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎣</text></svg>" />
 </head>
 <body>
 
-<div class="bg-glow bg-glow-1"></div>
-<div class="bg-glow bg-glow-2"></div>
+<div class="blob blob-teal"></div>
+<div class="blob blob-purple"></div>
+<div class="blob blob-pink"></div>
+<div class="blob blob-gold"></div>
+
+<div class="bubbles" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span>
+  <span></span><span></span><span></span><span></span><span></span>
+</div>
 
 <header class="site-header">
   <div class="container header-inner">
@@ -22,6 +29,9 @@
     <nav class="nav">
       <a href="#features">Features</a>
       <a href="#chat">Chat</a>
+      <a href="#rarities">Rarities</a>
+      <a href="#mutations">Mutations</a>
+      <a href="#fishdex">Fishdex</a>
       <a href="#topics">Topics</a>
       <a href="#about">About</a>
     </nav>
@@ -32,52 +42,57 @@
 <main>
 
   <section class="hero container">
-    <div class="hero-badge">Built for the Roblox game <strong>Fisch</strong></div>
+    <div class="hero-badge">🐟 Built for the Roblox game <strong>&nbsp;Fisch</strong></div>
     <h1>Your always-on guide to <span class="accent">Fisch</span>.</h1>
     <p class="hero-sub">
-      CooperAI is a chat assistant that answers your questions about Fisch — rods, bait,
-      enchants, locations, bosses, secrets and more — instantly, in plain language.
+      CooperAI is a chat assistant loaded with everything about Fisch — rods, bait, enchants,
+      mutations, rarities, locations, bosses, and a 300-fish lookup database — answered instantly,
+      in plain language.
     </p>
     <div class="hero-actions">
       <a href="#chat" class="btn btn-primary">Start chatting</a>
-      <a href="#topics" class="btn btn-ghost">See what it knows</a>
+      <a href="#fishdex" class="btn btn-ghost">Browse the Fishdex</a>
     </div>
     <div class="hero-stats">
+      <div class="stat"><strong>300</strong><span>Fish in the database</span></div>
+      <div class="stat"><strong>14</strong><span>Rarity &amp; item tiers</span></div>
       <div class="stat"><strong>24/7</strong><span>Always available</span></div>
-      <div class="stat"><strong>0s</strong><span>Sign-up required</span></div>
-      <div class="stat"><strong>Fan-made</strong><span>Built for anglers</span></div>
     </div>
   </section>
 
+  <div class="wave-divider" aria-hidden="true">
+    <svg viewBox="0 0 1200 80" preserveAspectRatio="none"><path d="M0,40 C200,90 400,0 600,40 C800,80 1000,10 1200,40 L1200,80 L0,80 Z"></path></svg>
+  </div>
+
   <section id="features" class="features container">
-    <h2>Why anglers use CooperAI</h2>
+    <h2>Why anglers use <span class="accent">CooperAI</span></h2>
     <div class="feature-grid">
-      <div class="feature-card">
+      <div class="feature-card card-teal">
         <div class="feature-icon">⚡</div>
         <h3>Instant answers</h3>
-        <p>Skip the wiki-hopping. Ask about a rod, bait or location and get a straight answer in seconds.</p>
+        <p>Skip the wiki-hopping. Ask about a rod, mutation, or fish and get a straight answer in seconds.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card card-purple">
         <div class="feature-icon">🧭</div>
         <h3>Beginner friendly</h3>
-        <p>New to Moosewood? CooperAI walks you through your first rod, first bait, and first sale.</p>
+        <p>New to Moosewood? CooperAI walks you through your first rod, first bait, appraising, and your first sale.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">🗺️</div>
-        <h3>Deep game knowledge</h3>
-        <p>From enchant tiers to boss fish strategy, CooperAI covers the mechanics that matter.</p>
+      <div class="feature-card card-pink">
+        <div class="feature-icon">🐟</div>
+        <h3>300-fish Fishdex</h3>
+        <p>Type any fish name — from Anchovy to Aetherfin — and CooperAI tells you its rarity instantly.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card card-gold">
         <div class="feature-icon">💬</div>
         <h3>Conversational</h3>
-        <p>No menus to dig through — just type your question the way you'd ask a friend.</p>
+        <p>No menus to dig through — just type your question the way you'd ask a friend at the docks.</p>
       </div>
     </div>
   </section>
 
   <section id="chat" class="chat-section container">
-    <h2>Chat with CooperAI</h2>
-    <p class="chat-sub">Try asking about rods, bait, enchants, locations, bosses, or how to get started.</p>
+    <h2>Chat with <span class="accent">CooperAI</span></h2>
+    <p class="chat-sub">Ask about rods, bait, enchants, mutations, locations, bosses, or type any fish name to look it up.</p>
 
     <div class="chat-window">
       <div class="chat-header">
@@ -88,10 +103,57 @@
       <div class="chat-messages" id="chatMessages"></div>
       <div class="chat-suggestions" id="chatSuggestions"></div>
       <form class="chat-input-row" id="chatForm">
-        <input type="text" id="chatInput" placeholder="Ask about rods, bait, locations, bosses…" autocomplete="off" />
+        <input type="text" id="chatInput" placeholder="Ask about rods, mutations, or a fish name…" autocomplete="off" />
         <button type="submit" class="btn btn-primary btn-send">Send</button>
       </form>
     </div>
+  </section>
+
+  <section id="rarities" class="rarities container">
+    <h2>Fish <span class="accent">Rarity</span> Tiers</h2>
+    <p class="chat-sub">From gutter trash to game-breaking secrets — rarity roughly in ascending order.</p>
+    <div class="rarity-row">
+      <span class="rarity-chip r-trash">Trash</span>
+      <span class="rarity-chip r-common">Common</span>
+      <span class="rarity-chip r-uncommon">Uncommon</span>
+      <span class="rarity-chip r-unusual">Unusual</span>
+      <span class="rarity-chip r-rare">Rare</span>
+      <span class="rarity-chip r-legendary">Legendary</span>
+      <span class="rarity-chip r-mythical">Mythical</span>
+      <span class="rarity-chip r-exotic">Exotic</span>
+      <span class="rarity-chip r-secret">Secret</span>
+      <span class="rarity-chip r-relic">Relic</span>
+      <span class="rarity-chip r-fragment">Fragment</span>
+      <span class="rarity-chip r-gemstone">Gemstone</span>
+      <span class="rarity-chip r-apex">Apex</span>
+      <span class="rarity-chip r-divine">Divine Secret</span>
+    </div>
+  </section>
+
+  <section id="mutations" class="mutations container">
+    <h2>Top <span class="accent">Mutations</span> by Value Multiplier</h2>
+    <p class="chat-sub">A fish can only carry one mutation at a time — higher multipliers take priority.</p>
+    <div class="mutation-grid">
+      <div class="mutation-card"><span class="mult">12×</span><strong>Aether</strong></div>
+      <div class="mutation-card"><span class="mult">11.7×</span><strong>Fury</strong></div>
+      <div class="mutation-card"><span class="mult">11.1×</span><strong>Hades' Curse</strong></div>
+      <div class="mutation-card"><span class="mult">11×</span><strong>Golden Part</strong></div>
+      <div class="mutation-card"><span class="mult">4×</span><strong>Sunken</strong></div>
+      <div class="mutation-card"><span class="mult">2.4×</span><strong>Sleet</strong></div>
+      <div class="mutation-card"><span class="mult">1.85×</span><strong>Shiny</strong></div>
+      <div class="mutation-card"><span class="mult">1.85×</span><strong>Sparkling</strong></div>
+      <div class="mutation-card"><span class="mult">1.6×</span><strong>Glossy</strong></div>
+      <div class="mutation-card"><span class="mult">1.6×</span><strong>Silver</strong></div>
+      <div class="mutation-card"><span class="mult">1.3×</span><strong>Darkened</strong></div>
+      <div class="mutation-card"><span class="mult">1×</span><strong>Big / Giant</strong></div>
+    </div>
+  </section>
+
+  <section id="fishdex" class="fishdex container">
+    <h2>The <span class="accent">Fishdex</span></h2>
+    <p class="chat-sub">300 fish, sorted by rarity. Search below, or just ask CooperAI directly in the chat above.</p>
+    <input type="text" id="fishdexSearch" class="fishdex-search" placeholder="Search the Fishdex…" autocomplete="off" />
+    <div class="fishdex-grid" id="fishdexGrid"></div>
   </section>
 
   <section id="topics" class="topics container">
@@ -100,13 +162,18 @@
       <div class="topic-chip">Fishing Rods</div>
       <div class="topic-chip">Bait</div>
       <div class="topic-chip">Enchantments</div>
+      <div class="topic-chip">Mutations</div>
+      <div class="topic-chip">Rarity Tiers</div>
+      <div class="topic-chip">300-Fish Fishdex</div>
       <div class="topic-chip">Locations & Seas</div>
       <div class="topic-chip">Bosses & Secrets</div>
       <div class="topic-chip">Currency & Selling</div>
+      <div class="topic-chip">Appraising</div>
       <div class="topic-chip">Boats & Travel</div>
       <div class="topic-chip">Trading</div>
+      <div class="topic-chip">Second Sea Reset</div>
+      <div class="topic-chip">Totems</div>
       <div class="topic-chip">Beginner Tips</div>
-      <div class="topic-chip">Recent Updates</div>
     </div>
   </section>
 
@@ -114,13 +181,14 @@
     <h2>About CooperAI</h2>
     <p>
       CooperAI is a fan-made chat assistant focused entirely on <strong>Fisch</strong>, the open-world
-      fishing adventure game on Roblox. It answers questions using a built-in knowledge base covering
-      the game's core mechanics — no account, download, or data collection required.
+      fishing adventure game on Roblox created by developer WoozyNate and the Fisching team. It answers
+      questions using a built-in knowledge base — including a 300-entry fish rarity database — with no
+      account, download, or data collection required.
     </p>
     <p class="disclaimer">
       CooperAI is an independent fan project and is not affiliated with, endorsed by, or connected to
       Roblox Corporation, WoozyNate, or the Fisching development team. Fisch and all related game
-      content are the property of their respective owners.
+      content, fish names, and data are the property of their respective owners.
     </p>
   </section>
 
@@ -136,6 +204,7 @@
   </div>
 </footer>
 
+<script src="fish-data.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
