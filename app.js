@@ -127,8 +127,6 @@ const SUGGESTIONS = [
   "How does reeling work?"
 ];
 
-// Sort FISH_DB by name length descending so multi-word names (e.g. "Colossal Squid")
-// are matched before a shorter substring inside them could cause a false match.
 const FISH_LOOKUP = [...FISH_DB].sort((a, b) => b.name.length - a.name.length);
 
 function findFishMatch(textLower) {
@@ -138,6 +136,11 @@ function findFishMatch(textLower) {
   return null;
 }
 
+function formatPrice(price) {
+  if (price == null) return null;
+  return "C$" + price.toLocaleString(undefined, { maximumFractionDigits: price < 100 ? 1 : 0 });
+}
+
 function fishReply(fish) {
   const tierIndex = RARITY_ORDER.indexOf(fish.rarity);
   const isTop = tierIndex >= RARITY_ORDER.indexOf("Exotic");
@@ -145,13 +148,12 @@ function fishReply(fish) {
     ? " That puts it among the toughest catches in the game — worth building a dedicated rod and enchant setup for."
     : "";
   let extra = "";
-  if (fish.price != null && fish.location) {
-    const priceText = "C$" + fish.price.toLocaleString(undefined, { maximumFractionDigits: fish.price < 100 ? 1 : 0 });
+  const priceText = formatPrice(fish.price);
+  if (priceText && fish.location) {
     extra = ` It's caught around ${fish.location} and sells for roughly ${priceText} on average.`;
   } else if (fish.location) {
     extra = ` It's typically found around ${fish.location}.`;
-  } else if (fish.price != null) {
-    const priceText = "C$" + fish.price.toLocaleString(undefined, { maximumFractionDigits: fish.price < 100 ? 1 : 0 });
+  } else if (priceText) {
     extra = ` It sells for roughly ${priceText} on average.`;
   }
   return `The ${fish.name} is a ${fish.rarity}-tier fish in Fisch.${extra}${flavor}`;
@@ -167,7 +169,6 @@ function scoreEntry(entry, textLower) {
 
 function getReply(userText) {
   const textLower = userText.toLowerCase();
-
   const fishMatch = findFishMatch(textLower);
 
   let best = null;
@@ -180,8 +181,6 @@ function getReply(userText) {
     }
   }
 
-  // Prefer a specific fish match unless a strong topic keyword also matched
-  // (e.g. "what rarity is Megalodon" should still give the fish answer).
   if (fishMatch && (!best || bestScore <= 2)) return fishReply(fishMatch);
   if (fishMatch && textLower.includes(fishMatch.name.toLowerCase()) && bestScore < 3) return fishReply(fishMatch);
 
@@ -243,7 +242,7 @@ SUGGESTIONS.forEach((s) => {
 
 addMessage("Hey! I'm CooperAI 🎣 — ask me anything about Fisch: rods, bait, enchants, mutations, locations, bosses, or type any fish name (I know 624) to look up its rarity, price, and where to catch it.", "bot");
 
-// --- Fishdex browser ---
+// ============== Fishdex browser ==============
 const RARITY_CLASS = {
   "Trash": "r-trash", "Common": "r-common", "Uncommon": "r-uncommon", "Unusual": "r-unusual",
   "Rare": "r-rare", "Legendary": "r-legendary", "Mythical": "r-mythical", "Exotic": "r-exotic",
@@ -269,21 +268,35 @@ function renderFishdex(filter) {
   items.forEach((fish) => {
     const card = document.createElement("div");
     card.className = "fishdex-item";
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
+
     const name = document.createElement("span");
     name.className = "fname";
     name.textContent = fish.name;
+
     const rarity = document.createElement("span");
     rarity.className = "frarity " + (RARITY_CLASS[fish.rarity] || "r-common");
     rarity.textContent = fish.rarity;
+
     card.appendChild(name);
     card.appendChild(rarity);
+
     if (fish.price != null) {
       const priceLine = document.createElement("span");
       priceLine.className = "fprice";
-      priceLine.textContent = "C$" + fish.price.toLocaleString(undefined, { maximumFractionDigits: fish.price < 100 ? 1 : 0 }) + (fish.location ? " · " + fish.location : "");
+      priceLine.textContent = formatPrice(fish.price) + (fish.location ? " · " + fish.location : "");
       card.appendChild(priceLine);
     }
+
     card.addEventListener("click", () => openFishModal(fish));
+    card.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openFishModal(fish);
+      }
+    });
+
     frag.appendChild(card);
   });
   fishdexGrid.appendChild(frag);
@@ -292,8 +305,7 @@ function renderFishdex(filter) {
 fishdexSearch.addEventListener("input", (e) => renderFishdex(e.target.value));
 renderFishdex("");
 
-
-// --- Fish detail modal ---
+// ============== Fish detail modal ==============
 const RARITY_INFO = {
   "Trash": "Trash-tier catches are the most common junk items in Fisch. They sell for very little but are easy to reel in, making them useful mainly for early Bestiary progress rather than profit.",
   "Common": "Common fish are plentiful and easy to catch almost anywhere. They're the backbone of early-game income before better rods and bait open up rarer water.",
@@ -314,43 +326,40 @@ const RARITY_INFO = {
 const fishModalOverlay = document.getElementById("fishModalOverlay");
 const fishModalRarity = document.getElementById("fishModalRarity");
 const fishModalName = document.getElementById("fishModalName");
+const fishModalStats = document.getElementById("fishModalStats");
 const fishModalDesc = document.getElementById("fishModalDesc");
 const fishModalLink = document.getElementById("fishModalLink");
 const fishModalClose = document.getElementById("fishModalClose");
-
-function formatPrice(price) {
-  if (price == null) return null;
-  return "C$" + price.toLocaleString(undefined, { maximumFractionDigits: price < 100 ? 1 : 0 });
-}
 
 function openFishModal(fish) {
   fishModalRarity.textContent = fish.rarity;
   fishModalRarity.className = "fish-modal-rarity " + (RARITY_CLASS[fish.rarity] || "r-common");
   fishModalName.textContent = fish.name;
 
-  const fishModalStats = document.getElementById("fishModalStats");
   fishModalStats.innerHTML = "";
   const priceText = formatPrice(fish.price);
   if (priceText) {
     const priceBox = document.createElement("div");
     priceBox.className = "fish-modal-stat";
-    priceBox.innerHTML = '<span class="label">Avg. Sale Price</span><span class="value">' + priceText + '</span>';
+    priceBox.innerHTML = '<span class="label">Avg. Sale Price</span><span class="value">' + priceText + "</span>";
     fishModalStats.appendChild(priceBox);
   }
   if (fish.location) {
     const locBox = document.createElement("div");
     locBox.className = "fish-modal-stat";
-    locBox.innerHTML = '<span class="label">Catch Location</span><span class="value">' + fish.location + '</span>';
+    locBox.innerHTML = '<span class="label">Catch Location</span><span class="value">' + fish.location + "</span>";
     fishModalStats.appendChild(locBox);
   }
 
   fishModalDesc.textContent = RARITY_INFO[fish.rarity] || "No further details are available for this rarity tier yet.";
   fishModalLink.href = "https://fischipedia.org/index.php?search=" + encodeURIComponent(fish.name);
   fishModalOverlay.classList.add("open");
+  document.body.style.overflow = "hidden";
 }
 
 function closeFishModal() {
   fishModalOverlay.classList.remove("open");
+  document.body.style.overflow = "";
 }
 
 fishModalClose.addEventListener("click", closeFishModal);
@@ -360,3 +369,105 @@ fishModalOverlay.addEventListener("click", (e) => {
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") closeFishModal();
 });
+
+// ============== Scroll reveal ==============
+const revealEls = document.querySelectorAll(".reveal");
+if ("IntersectionObserver" in window) {
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+  revealEls.forEach((el) => revealObserver.observe(el));
+} else {
+  revealEls.forEach((el) => el.classList.add("visible"));
+}
+
+// ============== Animated stat counters ==============
+function animateCounter(el) {
+  const target = parseInt(el.getAttribute("data-count"), 10);
+  if (!target) return;
+  const duration = 1400;
+  const start = performance.now();
+  function tick(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(eased * target);
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+const counters = document.querySelectorAll("[data-count]");
+if ("IntersectionObserver" in window && counters.length) {
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        animateCounter(entry.target);
+        counterObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  counters.forEach((el) => counterObserver.observe(el));
+} else {
+  counters.forEach((el) => { el.textContent = el.getAttribute("data-count"); });
+}
+
+// ============== Page loader ==============
+window.addEventListener("load", () => {
+  const loader = document.getElementById("pageLoader");
+  if (loader) setTimeout(() => loader.classList.add("hidden"), 300);
+});
+
+// ============== Lightweight floating fish canvas ==============
+(function initFishCanvas() {
+  const canvas = document.getElementById("fishCanvas");
+  if (!canvas) return;
+  const ctx2d = canvas.getContext("2d");
+  let width, height, particles;
+  const COLORS = ["#2de2c9", "#5b8cff", "#b06bff", "#ff6fd8", "#ffc857"];
+
+  function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  }
+
+  function makeParticles() {
+    const count = Math.min(28, Math.floor(width / 60));
+    particles = Array.from({ length: count }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      r: 1.5 + Math.random() * 2.5,
+      speedY: 0.15 + Math.random() * 0.35,
+      drift: Math.random() * 0.6 - 0.3,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      alpha: 0.15 + Math.random() * 0.25
+    }));
+  }
+
+  function draw() {
+    ctx2d.clearRect(0, 0, width, height);
+    particles.forEach((p) => {
+      p.y -= p.speedY;
+      p.x += Math.sin(p.y * 0.01) * p.drift * 0.4;
+      if (p.y < -10) { p.y = height + 10; p.x = Math.random() * width; }
+      ctx2d.beginPath();
+      ctx2d.fillStyle = p.color;
+      ctx2d.globalAlpha = p.alpha;
+      ctx2d.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx2d.fill();
+    });
+    ctx2d.globalAlpha = 1;
+    requestAnimationFrame(draw);
+  }
+
+  const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reducedMotion) return;
+
+  resize();
+  makeParticles();
+  draw();
+  window.addEventListener("resize", () => { resize(); makeParticles(); });
+})();
