@@ -1,6 +1,6 @@
 // CooperAI — local Fisch knowledge base + lightweight keyword-matching chat engine.
 // Runs entirely in the browser: no server, no API key, no data leaves the page.
-// FISH_DB (300 entries) is loaded separately from fish-data.js.
+// FISH_DB (624 entries) is loaded separately from fish-data.js.
 
 const RARITY_ORDER = ["Trash","Common","Uncommon","Unusual","Rare","Legendary","Mythical","Exotic","Secret","Relic","Fragment","Gemstone","Apex","Divine Secret"];
 
@@ -8,7 +8,7 @@ const KNOWLEDGE = [
   {
     id: "greeting",
     keywords: ["hello", "hi", "hey", "yo", "sup", "greetings"],
-    reply: "Hey there! I'm CooperAI, your Fisch assistant. Ask me about rods, bait, enchants, mutations, rarities, locations, bosses, currency, or type any fish name — I know 300 of them."
+    reply: "Hey there! I'm CooperAI, your Fisch assistant. Ask me about rods, bait, enchants, mutations, rarities, locations, bosses, currency, or type any fish name — I know 624 of them, most with price and catch location."
   },
   {
     id: "what-is-fisch",
@@ -103,7 +103,7 @@ const KNOWLEDGE = [
   {
     id: "fishdex",
     keywords: ["fishdex", "how many fish", "fish database", "fish list"],
-    reply: "I've got 300 fish loaded, spanning every rarity tier from Rare all the way up to Divine Secret. Just type a fish's name — like 'Megalodon' or 'Scylla' — and I'll tell you its rarity. You can also scroll and search the full list in the Fishdex section on this page."
+    reply: "I've got 624 fish loaded, spanning every rarity tier from Trash all the way up to Divine Secret. Just type a fish's name — like 'Megalodon' or 'Scylla' — and I'll tell you its rarity, average sale price, and where to catch it when that data's available. You can also scroll and search the full list in the Fishdex section on this page."
   },
   {
     id: "thanks",
@@ -117,13 +117,13 @@ const KNOWLEDGE = [
   }
 ];
 
-const FALLBACK = "I don't have a solid answer for that one yet. Try asking about rods, bait, enchants, mutations, rarities, locations, bosses, currency, appraising, totems, how to get started — or type a fish name from the Fishdex.";
+const FALLBACK = "I don't have a solid answer for that one yet. Try asking about rods, bait, enchants, mutations, rarities, locations, bosses, currency, appraising, totems, how to get started — or type a fish name from the Fishdex for its rarity, price, and catch location.";
 
 const SUGGESTIONS = [
   "What is Fisch?",
   "Best enchants?",
-  "What rarity is Megalodon?",
-  "Tell me about Scylla",
+  "Where do I catch Megalodon?",
+  "How much is Scylla worth?",
   "How does reeling work?"
 ];
 
@@ -144,7 +144,17 @@ function fishReply(fish) {
   const flavor = isTop
     ? " That puts it among the toughest catches in the game — worth building a dedicated rod and enchant setup for."
     : "";
-  return `The ${fish.name} is a ${fish.rarity}-tier fish in Fisch.${flavor}`;
+  let extra = "";
+  if (fish.price != null && fish.location) {
+    const priceText = "C$" + fish.price.toLocaleString(undefined, { maximumFractionDigits: fish.price < 100 ? 1 : 0 });
+    extra = ` It's caught around ${fish.location} and sells for roughly ${priceText} on average.`;
+  } else if (fish.location) {
+    extra = ` It's typically found around ${fish.location}.`;
+  } else if (fish.price != null) {
+    const priceText = "C$" + fish.price.toLocaleString(undefined, { maximumFractionDigits: fish.price < 100 ? 1 : 0 });
+    extra = ` It sells for roughly ${priceText} on average.`;
+  }
+  return `The ${fish.name} is a ${fish.rarity}-tier fish in Fisch.${extra}${flavor}`;
 }
 
 function scoreEntry(entry, textLower) {
@@ -231,7 +241,7 @@ SUGGESTIONS.forEach((s) => {
   chatSuggestions.appendChild(btn);
 });
 
-addMessage("Hey! I'm CooperAI 🎣 — ask me anything about Fisch: rods, bait, enchants, mutations, locations, bosses, or type any fish name (I know 300) to look up its rarity.", "bot");
+addMessage("Hey! I'm CooperAI 🎣 — ask me anything about Fisch: rods, bait, enchants, mutations, locations, bosses, or type any fish name (I know 624) to look up its rarity, price, and where to catch it.", "bot");
 
 // --- Fishdex browser ---
 const RARITY_CLASS = {
@@ -267,6 +277,13 @@ function renderFishdex(filter) {
     rarity.textContent = fish.rarity;
     card.appendChild(name);
     card.appendChild(rarity);
+    if (fish.price != null) {
+      const priceLine = document.createElement("span");
+      priceLine.className = "fprice";
+      priceLine.textContent = "C$" + fish.price.toLocaleString(undefined, { maximumFractionDigits: fish.price < 100 ? 1 : 0 }) + (fish.location ? " · " + fish.location : "");
+      card.appendChild(priceLine);
+    }
+    card.addEventListener("click", () => openFishModal(fish));
     frag.appendChild(card);
   });
   fishdexGrid.appendChild(frag);
@@ -274,3 +291,72 @@ function renderFishdex(filter) {
 
 fishdexSearch.addEventListener("input", (e) => renderFishdex(e.target.value));
 renderFishdex("");
+
+
+// --- Fish detail modal ---
+const RARITY_INFO = {
+  "Trash": "Trash-tier catches are the most common junk items in Fisch. They sell for very little but are easy to reel in, making them useful mainly for early Bestiary progress rather than profit.",
+  "Common": "Common fish are plentiful and easy to catch almost anywhere. They're the backbone of early-game income before better rods and bait open up rarer water.",
+  "Uncommon": "Uncommon fish show up a bit less often than Common ones. They're still accessible early on but usually reward slightly better bait or a bit of patience.",
+  "Unusual": "Unusual-tier fish sit between Uncommon and Rare — a modest step up in both rarity and payout, often found in the same waters as easier fish.",
+  "Rare": "Rare fish take real effort to land: better bait, the right location, or specific weather and time-of-day conditions noticeably improve your odds.",
+  "Legendary": "Legendary fish are a major mid-to-late-game target. Landing one usually calls for a rod with strong stats and often a matching enchant.",
+  "Mythical": "Mythical fish are among the toughest standard catches in Fisch, typically requiring end-game rods, specific bait, and favorable conditions.",
+  "Exotic": "Exotic fish are elite-tier catches — some are boss-like sea creatures, others require rare keys, items, or hard-to-reach locations to even attempt.",
+  "Secret": "Secret-tier fish are hidden behind unique unlock conditions, events, or exploration puzzles rather than plain luck — many are tied to specific storylines or areas.",
+  "Relic": "Relics are rare non-fish collectibles tied to end-game crafting or enchanting systems, usually found in specific late-game zones.",
+  "Fragment": "Fragments are crafting materials used in high-level recipes or upgrades, generally sourced from specific elemental or thematic areas.",
+  "Gemstone": "Gemstones are valuable mineral-type catches used in crafting and trading, distinct from standard fish species.",
+  "Apex": "Apex predators are some of the most powerful and difficult catches in the entire game, often requiring top-tier gear and strategy to land.",
+  "Divine Secret": "Divine Secret is the rarest tier in Fisch — these are the game's ultimate hidden catches, usually tied to the deepest secrets and most demanding challenges available."
+};
+
+const fishModalOverlay = document.getElementById("fishModalOverlay");
+const fishModalRarity = document.getElementById("fishModalRarity");
+const fishModalName = document.getElementById("fishModalName");
+const fishModalDesc = document.getElementById("fishModalDesc");
+const fishModalLink = document.getElementById("fishModalLink");
+const fishModalClose = document.getElementById("fishModalClose");
+
+function formatPrice(price) {
+  if (price == null) return null;
+  return "C$" + price.toLocaleString(undefined, { maximumFractionDigits: price < 100 ? 1 : 0 });
+}
+
+function openFishModal(fish) {
+  fishModalRarity.textContent = fish.rarity;
+  fishModalRarity.className = "fish-modal-rarity " + (RARITY_CLASS[fish.rarity] || "r-common");
+  fishModalName.textContent = fish.name;
+
+  const fishModalStats = document.getElementById("fishModalStats");
+  fishModalStats.innerHTML = "";
+  const priceText = formatPrice(fish.price);
+  if (priceText) {
+    const priceBox = document.createElement("div");
+    priceBox.className = "fish-modal-stat";
+    priceBox.innerHTML = '<span class="label">Avg. Sale Price</span><span class="value">' + priceText + '</span>';
+    fishModalStats.appendChild(priceBox);
+  }
+  if (fish.location) {
+    const locBox = document.createElement("div");
+    locBox.className = "fish-modal-stat";
+    locBox.innerHTML = '<span class="label">Catch Location</span><span class="value">' + fish.location + '</span>';
+    fishModalStats.appendChild(locBox);
+  }
+
+  fishModalDesc.textContent = RARITY_INFO[fish.rarity] || "No further details are available for this rarity tier yet.";
+  fishModalLink.href = "https://fischipedia.org/index.php?search=" + encodeURIComponent(fish.name);
+  fishModalOverlay.classList.add("open");
+}
+
+function closeFishModal() {
+  fishModalOverlay.classList.remove("open");
+}
+
+fishModalClose.addEventListener("click", closeFishModal);
+fishModalOverlay.addEventListener("click", (e) => {
+  if (e.target === fishModalOverlay) closeFishModal();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeFishModal();
+});
