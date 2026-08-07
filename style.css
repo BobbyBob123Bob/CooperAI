@@ -357,3 +357,71 @@ main { position: relative; z-index: 1; }
 }
 
 body { font-size: 17px; }
+
+.fishdex-item { cursor: pointer; }
+
+.fish-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(5,7,15,0.78);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.fish-modal-overlay.open { display: flex; }
+.fish-modal {
+  background: #0b0f1e;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  max-width: 460px;
+  width: 100%;
+  padding: 36px;
+  position: relative;
+  animation: modalPop 0.18s ease;
+}
+@keyframes modalPop {
+  from { transform: scale(0.94); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.fish-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 1.3rem;
+  cursor: pointer;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.fish-modal-close:hover { border-color: var(--teal); color: var(--teal); }
+.fish-modal-rarity {
+  display: inline-block;
+  padding: 7px 18px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #05070f;
+  margin-bottom: 18px;
+}
+.fish-modal-name { font-size: 1.7rem; font-weight: 800; margin: 0 0 16px; }
+.fish-modal-desc { color: var(--text-dim); font-size: 1.02rem; line-height: 1.65; margin: 0 0 24px; }
+.fish-modal-link {
+  display: inline-block;
+  color: var(--teal);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.98rem;
+}
+.fish-modal-link:hover { text-decoration: underline; }
